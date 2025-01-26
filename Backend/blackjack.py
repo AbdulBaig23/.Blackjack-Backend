@@ -32,10 +32,10 @@ def display_hand(player, hand):
     print(f"{player}'s hand: {', '.join(hand)} Value: ({calculate_hand_value(hand)})")
 
 def blackjack_in_hand(hand):
-    card_in_hand = [card[0] for card in hand]
-    if 'A' in card_in_hand and any(card in ['10', 'J', 'Q', 'K'] for card in card_in_hand) and len(card_in_hand) == 2:
+    if 'A' in hand and any(card in ['10', 'J', 'Q', 'K'] for card in hand) and len(hand) == 2:
         return True
     return False
+
 def check_chips(chips):
     if chips < 1:
         print("You ran out of chips, better luck next time!")
@@ -47,7 +47,6 @@ def blackjack():
     while chips > 0:
         while True:
             while True:
-
                 bet = input(f"You have {chips} chips, how much would you like to bet on this hand?")
                 if not bet.isnumeric():
                     print("Please enter a valid bet")
@@ -57,36 +56,37 @@ def blackjack():
                     print("Your bet is over your chip value, please bet again")
                 else:
                     bet = int(bet)
-                    break
+                    break #break for bet
+
+
             deck = create_deck()
             players_hand = [deal_card(deck), deal_card(deck)]
             dealers_hand = [deal_card(deck), deal_card(deck)]
 
             display_hand("Player", players_hand)
             print(f"Dealers is showing an {dealers_hand[0]}, Value ({card_values[dealers_hand[0]]})")
+
             time.sleep(1)
 
-            if blackjack_in_hand(players_hand):
-                if blackjack_in_hand(dealers_hand):
-                    print("Both player and dealer have blackjack. It's a tie!")
+            if any(card in ['A', 'K', 'Q', 'J', "10"] for card in dealers_hand) or any(card in ['A', 'K', 'Q', 'J', "10"] for card in players_hand):
+                if blackjack_in_hand(players_hand):
+                    if blackjack_in_hand(dealers_hand):
+                        print("Both player and dealer have blackjack. It's a tie!")
+                    else:
+                        print("Player has blackjack! Player wins!")
+                        print(f"Dealer had {dealers_hand} Value: {calculate_hand_value(dealers_hand)}")
+                        chips += (1.5 * bet)
+                    break # break for blackjack detected
 
+                elif blackjack_in_hand(dealers_hand):
+                    print("Dealer has blackjack! Dealer wins!")
+                    print(f"Dealer has {dealers_hand}")
+                    chips -= bet
+                    check_chips(chips)
+                    break # break for blackjack detected
 
-                else:
-                    print("Player has blackjack! Player wins!")
-                    chips += (1.5 * bet)
-
-                break
-                #return
-            elif blackjack_in_hand(dealers_hand):
-                print("Dealer has blackjack! Dealer wins!")
-                print(f"Dealer has {dealers_hand}")
-                chips -= bet
-                check_chips(chips)
-
-                break
-                #return
-            time.sleep(1)
-            print("No blackjack detected. Continuing with the game...")
+                time.sleep(1)
+                print("No blackjack detected. Continuing with the game...")
 
 
 
@@ -99,8 +99,9 @@ def blackjack():
                     time.sleep(1)
                     display_hand("Player", players_hand)
                     total = calculate_hand_value(players_hand)
+
                     if total == 21:
-                        break
+                        break #break for input
 
                     if calculate_hand_value(players_hand) > 21:
                         time.sleep(1)
@@ -110,7 +111,7 @@ def blackjack():
                         chips -= bet
                         check_chips(chips)
                         break
-                        #return
+
 
                 elif choice == "s":
                     break
@@ -123,22 +124,23 @@ def blackjack():
                 time.sleep(1)
                 display_hand("Dealer", dealers_hand)
                 time.sleep(2)
+
                 while calculate_hand_value(dealers_hand) < 17:
                     print("Dealer hits")
                     time.sleep(1.5)
                     dealers_hand.append(deal_card(deck))
                     print("Dealer pulls a " + str([dealers_hand[-1]]))
-                    time.sleep(2)
+                    time.sleep(1)
                     display_hand("Dealer", dealers_hand)
-                    time.sleep(2)
+                    time.sleep(1)
 
                     if calculate_hand_value(dealers_hand) > 21:
                         print("Dealer busts! You win!")
                         chips += bet
                         time.sleep(1)
-                        print(f"Players cards {', '.join(players_hand)} ,total value is {calculate_hand_value(players_hand)}")
+                        print(f"Players cards {', '.join(players_hand)}, total value is {calculate_hand_value(players_hand)}")
                         time.sleep(1)
-                        print(f"Dealers cards {', '.join(dealers_hand)} ,total value is {calculate_hand_value(dealers_hand)}")
+                        print(f"Dealers cards {', '.join(dealers_hand)}, total value is {calculate_hand_value(dealers_hand)}")
                         time.sleep(1)
                         break
                         #return
@@ -162,7 +164,7 @@ def blackjack():
                     else:
                         print("The hands are equal, Its a push!")
 
-                    #return
+
 
 
 if __name__ == "__main__":
